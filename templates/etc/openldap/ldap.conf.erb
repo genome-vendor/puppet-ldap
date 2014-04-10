@@ -49,7 +49,9 @@ sudoers_debug         <%= @sudoers_debug %>
 <% if @ssl == true then -%>
 ssl           start_tls
 tls_reqcert   never
+<% if @ssl_cert != false then -%>
 tls_cacertdir <%= scope.lookupvar('ldap::params::cacertdir') %>
+<% end -%>
 <% else -%>
 #ssl           start_tls
 #tls_reqcert   never

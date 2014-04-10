@@ -230,36 +230,35 @@ class ldap::client(
   }
 
   if($ssl) {
+    if($ssl_cert) {
 
-    if(!$ssl_cert) {
-      fail('When ssl is enabled you must define ssl_cert (filename)')
-    }
+      file { $ldap::params::cacertdir:
+        ensure => $ensure ? {
+                    present => directory,
+                    default => absent
+                  },
+        owner  => 'root',
+        group  => 'root',
+        mode   => '0755',
+      }
 
-    file { $ldap::params::cacertdir:
-      ensure => $ensure ? {
-                  present => directory,
-                  default => absent
-                },
-      owner  => 'root',
-      group  => 'root',
-      mode   => '0755',
-    }
+      file { "${ldap::params::cacertdir}/${ssl_cert}":
+        ensure  => $ensure,
+        owner   => 'root',
+        group   => $ldap::params::group,
+        mode    => '0644',
+        source  => "puppet:///files/ldap/${ssl_cert}",
+        require => File[$ldap::params::cacertdir],
+      }
 
-    file { "${ldap::params::cacertdir}/${ssl_cert}":
-      ensure  => $ensure,
-      owner   => 'root',
-      group   => $ldap::params::group,
-      mode    => '0644',
-      source  => "puppet:///files/ldap/${ssl_cert}",
-      require => File[$ldap::params::cacertdir],
-    }
+      # Create certificate hash file
+      exec { 'Build cert hash':
+        command => "ln -s ${ldap::params::cacertdir}/${ssl_cert} ${ldap::params::cacertdir}/$(openssl x509 -noout -hash -in ${ldap::params::cacertdir}/${ssl_cert}).0",
+        unless  => "test -f ${ldap::params::cacertdir}/$(openssl x509 -noout -hash -in ${ldap::params::cacertdir}/${ssl_cert}).0",
+        require => File["${ldap::params::cacertdir}/${ssl_cert}"],
+        path    => [ "/bin", "/usr/bin", "/sbin", "/usr/sbin" ]
+      }
 
-    # Create certificate hash file
-    exec { 'Build cert hash':
-      command => "ln -s ${ldap::params::cacertdir}/${ssl_cert} ${ldap::params::cacertdir}/$(openssl x509 -noout -hash -in ${ldap::params::cacertdir}/${ssl_cert}).0",
-      unless  => "test -f ${ldap::params::cacertdir}/$(openssl x509 -noout -hash -in ${ldap::params::cacertdir}/${ssl_cert}).0",
-      require => File["${ldap::params::cacertdir}/${ssl_cert}"],
-      path    => [ "/bin", "/usr/bin", "/sbin", "/usr/sbin" ]
     }
   }
 
