@@ -1,6 +1,8 @@
 
 class ldap::params {
 
+  $nss_initgroups_ignoreusers = 'root daemon bin sys sync games man lp mail news uucp proxy www-data backup list irc gnats nobody libuuid statd sshd puppet'
+
   case $::osfamily {
 
     'Ubuntu' : {

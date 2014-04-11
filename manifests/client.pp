@@ -182,6 +182,7 @@ class ldap::client(
   $nss_passwd = false,
   $nss_group  = false,
   $nss_shadow = false,
+  $nss_initgroups_ignoreusers = $ldap::params::nss_initgroups_ignoreusers
 
   $pam            = false,
   $pam_att_login  = 'uid',
