@@ -1,7 +1,111 @@
 
 class ldap::params {
 
+  $nss_initgroups_ignoreusers = 'root daemon bin sys sync games man lp mail news uucp proxy www-data backup list irc gnats nobody libuuid statd sshd puppet'
+
   case $::osfamily {
+
+    'Ubuntu' : {
+
+      $package   = [ 'ldap-utils' ]
+
+      $prefix    = '/etc/ldap'
+      $owner     = 'root'
+      $group     = 'root'
+      $config    = 'ldap.conf'
+      $cacertdir = '/etc/ssl/certs'
+
+      $service         = 'slapd'
+      $server_pattern  = 'slapd'
+      $server_package  = [ 'slapd' ]
+      $server_config   = 'slapd.conf'
+      $server_owner    = 'openldap'
+      $server_group    = 'openldap'
+      $db_prefix       = '/var/lib/ldap'
+      $ssl_prefix      = '/etc/ssl/certs'
+      $server_run      = '/var/run/slapd'
+
+      case $::operatingsystemmajrelease {
+        #        5 : {
+        #
+        #  case $::architecture {
+        #    /^amd64/: {
+        #      $module_prefix = '/usr/lib64/ldap'
+        #    }
+        #
+        #    /^i?[346]86/: {
+        #      $module_prefix = '/usr/lib/ldap'
+        #    }
+        #
+        #    default: {
+        #      fail("Architecture not supported (${::architecture})")
+        #    }
+        #
+        #  }
+        #
+        #}
+
+        default : {
+              $module_prefix = '/usr/lib/ldap'
+        }
+
+      }
+
+      $modules_base  = [ 'back_bdb' ]
+
+      $schema_prefix   = "${prefix}/schema"
+      $schema_base     = [ 'core', 'cosine', 'nis', 'inetorgperson', ]
+      $index_base      = [
+        'index objectclass  eq',
+        'index entryCSN     eq',
+        'index entryUUID    eq',
+        'index uidNumber    eq',
+        'index gidNumber    eq',
+        'index cn           pres,sub,eq',
+        'index sn           pres,sub,eq',
+        'index uid          pres,sub,eq',
+        'index displayName  pres,sub,eq',
+        ]
+
+      #
+      # olcTLS* attributes are not defined here
+      # because they do have their own behavior
+      # according to the puppet module parameters
+      #
+      #  olcTLSCACertificatePath = $ssl_ca
+      #  olcTLSCertificateFile = $ssl_cert
+      #  olcTLSCertificateKeyFile = $ssl_key
+      #
+      $cnconfig_default_attrs = [
+        'olcConfigFile',
+        'olcConfigDir',
+        'olcAllows',
+        'olcAttributeOptions',
+        'olcAuthzPolicty',
+        'olcConcurrency',
+        'olcConnMaxPending',
+        'olcConnMaxPendingAuth',
+        'olcGentleHUP',
+        'olcIdleTimeout',
+        'olcIndexSubstrIfMaxLen',
+        'olcIndexSubstrIfMinLen',
+        'olcIndexSubstrIfAnyLen',
+        'olcIndexSubstrIfAnyStep',
+        'olcIndexIntLen',
+        'olcLocalSSF',
+        'olcPidFile',
+        'olcReadOnly',
+        'olcReverseLookup',
+        'olcSaslSecProps',
+        'olcSockbufMaxIncoming',
+        'olcSockbufMaxIncomingAuth',
+        'olcTLSVerifyClient',
+        'olcThreads',
+        'olcToolThreads',
+        'olcWriteTimeout',
+      ]
+
+    }
 
     'Debian' : {
 
