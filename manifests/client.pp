@@ -277,7 +277,7 @@ class ldap::client(
 
   # require module pam
   if($pam == true) {
-    Class ['pam::pamd'] -> Class['ldap']
+    Class['pam::pamd'] -> Class['ldap']
   }
 
 }
