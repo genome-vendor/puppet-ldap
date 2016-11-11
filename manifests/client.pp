@@ -273,6 +273,7 @@ class ldap::client(
                         default   => 'none'
                       },
     }
+    contain 'nsswitch'
   }
 
   # require module pam
