@@ -226,7 +226,7 @@ class ldap::client(
   }
 
   file { "${ldap::params::prefix}/${ldap::params::config}":
-    content => template("ldap/${ldap::params::prefix}/${ldap::params::config}.erb"),
+    content => template("ldap/client/${ldap::params::config}.erb"),
     require => File[$ldap::params::prefix],
   }
 

@@ -219,7 +219,7 @@ class ldap::server::slave(
 
     file {"${ldap::params::prefix}/slapd.d/cn=config-update.ldif":
       ensure  => present,
-      content => template("ldap/${ldap::params::prefix}/slapd.d/cn=config-update.ldif.erb"),
+      content => template("ldap/client/slapd.d/cn=config-update.ldif.erb"),
       require => Service[$ldap::params::service],
     }
 
@@ -237,7 +237,7 @@ class ldap::server::slave(
 
   file { "${ldap::params::prefix}/${ldap::params::server_config}":
     ensure  => $ensure,
-    content => template("ldap/${ldap::params::prefix}/${ldap::params::server_config}.erb"),
+    content => template("ldap/client/${ldap::params::server_config}.erb"),
     notify  => Service[$ldap::params::service],
     require => $ssl ? {
       false => [
